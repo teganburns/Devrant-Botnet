@@ -19,8 +19,8 @@ Notes for video and bash script for creating bots on devrant.com
 Both **jq** and **curl** should be avaiable in most Linux distribution's package repository. 
 
 ## Account Creation Requirements
-    - Your username must be between 4 and 15 characters.
-    - Your password must be at least 6 characters.
+- Your username must be between 4 and 15 characters.
+- Your password must be at least 6 characters.
 
 
 ### Form Data
