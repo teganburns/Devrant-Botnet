@@ -5,6 +5,7 @@ Notes for video and bash script for creating bots on devrant.com
 # DISCLAIMER
 
 **ANY CODE THAT IS A PART OF THIS REPOSOTORY IS NOT TO BE USED IN ANY WAY THAT VIOLATES THE "devRant Terms of Service". REFRENCE TO THIS DOCUMENT CAN BE FOUND ON "https://devrant.com/terms"**
+
 ["devRant Terms of Service"]( https://devrant.com/terms ) 
 
 
@@ -15,7 +16,7 @@ Notes for video and bash script for creating bots on devrant.com
 - [jq]( https://stedolan.github.io/jq/ )
 - [curl]( https://curl.haxx.se/ )
 
-Both jq and curl should be avaiable for most Linux dists.
+Both **jq** and **curl** should be avaiable in most Linux distribution's package repository. 
 
 ## Account Creation Requirements
     - Your username must be between 4 and 15 characters.
