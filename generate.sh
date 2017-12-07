@@ -28,24 +28,45 @@ email="dfox@devrant.com"
 password="123456"
 app="3"
 type_="1"
+domain_name="devrant.com"
+credential_file="botcredentials.json"
 
+
+## Generate Password ##
+passwd_length=$(cat /dev/urandom | tr -dc '0-9' | fold -w 256 | head -n 1 | sed -e 's/^0*//' | head --bytes 1)
+while [ $passwd_length -lt 6 ]; do
+    passwd_length=$(cat /dev/urandom | tr -dc '0-9' | fold -w 256 | head -n 1 | sed -e 's/^0*//' | head --bytes 1)
+done;
+password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w  $passwd_length | head -n 1)
+
+## Generate Username ##
+username=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w  $passwd_length | head -n 1)
+
+## Generate Email ##
+email="$username@$domain_name"
+
+echo -e "{ \"username\" : $LBLUE \"$username\" $NC, \"password\" : $LBLUE \"$password\" $NC, \"email\" : $LBLUE \"$email\" $NC }"
+credential="{ \"username\" :  \"$username\" , \"password\" :  \"$password\" , \"email\" :  \"$email\"  }"
+
+## Append Credential to File ##
+echo $credential | jq '.' >> $credential_file
 
 ## POST Request ##
 response=$( curl -s -L -X POST -F "username=$username" -F "email=$email" -F "password=$password" -F "app=$app" -F "type=$type_" $url )
 
 ## Handle Response ##
-if [ $(echo $response | jq '.success') == 'false' ]; then
+if [[ $(echo $response | jq '.success') == "false" ]]; then
     echo -e "$RED"
     echo "Account creation failed for \"$username\"!!"
     echo -e "error$NC : $( echo $response | jq '.error')"
     echo -e "$RED error_field $NC : $( echo $response | jq '.error_field')"
     exit;
 
-elif [ $(echo $response | jq '.success') == 'success' ]; then
+elif [ $(echo $response | jq '.success') == "true" ]; then
     echo -e "$GREEN"
     echo "Account creation sucessful for \"$username\"!!"
-    echo "$response | jq '.'"
     echo -e "$NC"
+    echo "$response" | jq '.' >> $credential_file
     exit;
 
 else
