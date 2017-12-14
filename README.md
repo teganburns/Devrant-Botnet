@@ -4,9 +4,9 @@ Notes for video and bash script for creating bots on devrant.com
 
 # DISCLAIMER
 
-**ANY CODE THAT IS A PART OF THIS REPOSOTORY IS NOT TO BE USED IN ANY WAY THAT VIOLATES THE "devRant Terms of Service". REFRENCE TO THIS DOCUMENT CAN BE FOUND ON "https://devrant.com/terms"**
+**ANY CODE THAT IS A PART OF THIS REPOSITORY IS NOT TO BE USED IN ANY WAY THAT VIOLATES THE "devRant Terms of Service". REFRENCE TO THIS DOCUMENT CAN BE FOUND ON [devRant Terms of Service](https://devrant.com/terms)**
 
-["devRant Terms of Service"]( https://devrant.com/terms ) 
+
 
 
 
@@ -26,7 +26,7 @@ Both **jq** and **curl** should be avaiable in most Linux distribution's package
 ### Form Data
 
 **app**
-- Default value on web was 3. I assume this has to do with where you are regestering from. (ex. Web, Android, IOS, Other ). 
+- Default value for 3rd party clients use the backend code 3.
 
 **type**
 - Default value was 1. Can't say for sure what this represents.
@@ -44,7 +44,7 @@ Both **jq** and **curl** should be avaiable in most Linux distribution's package
 - Tracking id. ( example: y1tuxw18-133a-4m6w-mu1u-4m9zsekr7guc )
 
 **plat**
-- Default value on Web was 3. Platform identification. Assumed duplicate of app??
+- Default value for 3rd party clients use the backend code 3.
 
 **sid**
 - Tracking id. ( example: 1512511036000 )
