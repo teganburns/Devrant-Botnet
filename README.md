@@ -26,7 +26,7 @@ Both **jq** and **curl** should be avaiable in most Linux distribution's package
 ### Form Data
 
 **app**
-- Default value for 3rd party clients use the backend code 3. May be removed after time. 
+- Default value for 3rd party clients use the backend code 3.
 
 **type**
 - Default value was 1. Can't say for sure what this represents.
@@ -44,7 +44,7 @@ Both **jq** and **curl** should be avaiable in most Linux distribution's package
 - Tracking id. ( example: y1tuxw18-133a-4m6w-mu1u-4m9zsekr7guc )
 
 **plat**
-- Default value for 3rd party clients use the backend code 3. May be removed after time. 
+- Default value for 3rd party clients use the backend code 3.
 
 **sid**
 - Tracking id. ( example: 1512511036000 )
