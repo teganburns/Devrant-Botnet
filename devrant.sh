@@ -21,24 +21,27 @@ username="";
 password="";
 email="";
 userToken="";
+userTokenFile="userToken.json"
 
 # Dialog Settings
 title="Devrant Dialog // by @teganburns";
 w=8; h=40;
-mw=12; mh=80;
+mw=70; mh=130;
 
-
-# TODO: Check for userToken
+# TODO: Clean up invalid charters from user input
 
 function initPrompt {
     echo "called";
-    #dialog --title "$title" --menu "Welcome..." $w $h 3 1 red 2 green 3 blue
     res=$(dialog --title "$title" --menu "Welcome..." $mw $mh 2 1 Login 2 SignUp --output-fd 1 )
     if test $? -ne 0; then clear && exit; fi;
     case $res in
         1) loginPrompt;;
         2) signupPrompt;;
     esac
+}
+
+function handleUserToken {
+    echo "Function Not implemented";
 }
 
 function signupPrompt {
@@ -51,34 +54,68 @@ function signupPrompt {
     if test $? -ne 0; then clear && exit; fi;
     dialog --title "$title" --infobox "Signing up...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
     userToken=$( phantomjs js/signUp.js $username $password $email )
+    clear;
+    echo "UserToken: $userToken";
+    echo "$userToken" | jq '.';
 }
 
 function loginPrompt {
-    # Prompt for Username/Password
-    username=$( dialog --title "$title" --inputbox "Enter your username:" $w $h --output-fd 1 )
-    if test $? -ne 0; then clear && exit; fi;
-    password=$( dialog --title "$title" --inputbox "Enter your password:" $w $h --output-fd 1 )
-    if test $? -ne 0; then clear && exit; fi;
-    dialog --title "$title" --infobox "Logging in...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
-    userToken=$( phantomjs js/login.js $username $password )
+    # Check for userToken // aka. user already logged in
+    if [[ -e "userTokenFile" ]]; then
+        # TODO: Handle Refresh tokens
+        userToken=$( cat $userTokenFile );
+
+    else
+        # Prompt for Username/Password
+        username=$( dialog --title "$title" --inputbox "Enter your username:" $w $h --output-fd 1 )
+        if test $? -ne 0; then clear && exit; fi;
+        password=$( dialog --title "$title" --inputbox "Enter your password:" $w $h --output-fd 1 )
+        if test $? -ne 0; then clear && exit; fi;
+        dialog --title "$title" --infobox "Logging in...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
+        userToken=$( phantomjs js/login.js $username $password )
+
+    fi
 }
 
+function navNotifications {
+    echo "Notifications Function";
+}
+
+#function navFeed {}
+#function navSearch {}
+#function navCollabs {}
+#function navProfile {}
+#function navSettings {}
+
+function navLogout { rm "$userTokenFile" && clear && exit; }
 
 function mainNav {
-    res=$( dialog --title "$title" --menu "Welcome..." $w $h 10 1 Notifications 2 Feed 3 Search 4 Collabs 5 Profile 6 Settings 7 Log Out )
-    echo "Res: $res";
+    res=$( dialog --title "$title" --menu "Main Menu" $mw $mh $mw 1 Notifications 2 Feed 3 Search 4 Collabs 5 Profile 6 Settings 7 LogOut --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+    case $res in
+        0) clear && exit;;
+        1) navNotifications;;
+        2) clear && echo "Feed Menu";;
+        3) clear && echo "Search Menu";;
+        4) clear && echo "Collabs Menu";;
+        5) clear && echo "Profile Menu";;
+        6) clear && echo "Settings Menu";;
+        7) clear && echo "Logged out!";;
+    esac
 }
 
 initPrompt
 
 if [[ $( echo $userToken | jq '.success' ) == true ]]; then
+    echo $userToken > $userTokenFile;
+    dialog --title "$title" --infobox "Login Sucessful!" $w $h; sleep 1; 
     mainNav;
 elif [[ $( echo $userToken | jq '.success' ) == false ]]; then
-    # TODO: Create Retry Prompt
-    #retry=$( dialog --yesno "Try again?" $w $h )
-    #if test $? -ne 0; then clear && exit; fi;
-    #echo "Retry!: $retry";
-    clear; echo "Login Failed!";
+    prompt="Error: "
+    prompt+=$( echo $userToken | jq '.error' );
+    prompt+="\n\nTry again?";
+    dialog --title "$title" --yesno "$prompt" $w $h
+    if test $? -ne 0; then clear && exit; else initPrompt; fi;
 
 else
     echo "Unknown error when attempting to login..."; exit;

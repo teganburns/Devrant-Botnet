@@ -34,6 +34,7 @@ const devrant_feed_top_all = "https://devrant.com/feed/all";
 
 // Global vars
 var app = 3;
+var type = 1;
 var email = "";
 var username = "";
 var password = "";
@@ -60,13 +61,14 @@ var settings = {
     headers: { "Content-Type": "application/json" },
     data: JSON.stringify({
         "app": app,
+        "type", type,
         "email": email,
         "username": username,
         "password": password
     })
 };
 
-page.open( devrant_api_users_authToken, settings, function ( status ) {
+page.open( devrant_api_users, settings, function ( status ) {
     if (status !== 'success') { console.log('Connection issue!');
     } else { console.log( page.plainText ); }
     phantom.exit();
