@@ -1,3 +1,5 @@
 botcredentials.json
 usercredentials.json
 *.json
+*.swp
+

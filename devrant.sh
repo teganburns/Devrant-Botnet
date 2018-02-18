@@ -19,21 +19,45 @@
 
 username="";
 password="";
+email="";
 userToken="";
 
 # Dialog Settings
 title="Devrant Dialog // by @teganburns";
-w=8;
-h=40;
+w=8; h=40;
+mw=12; mh=80;
 
 
 # TODO: Check for userToken
+
+function initPrompt {
+    echo "called";
+    #dialog --title "$title" --menu "Welcome..." $w $h 3 1 red 2 green 3 blue
+    res=$(dialog --title "$title" --menu "Welcome..." $mw $mh 2 1 Login 2 SignUp --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+    case $res in
+        1) loginPrompt;;
+        2) signupPrompt;;
+    esac
+}
+
+function signupPrompt {
+    # Prompt for Username/Password
+    email=$( dialog --title "$title" --inputbox "Enter your email:" $w $h --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+        username=$( dialog --title "$title" --inputbox "Please choose a username (4-15 charters):" $w $h --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+        password=$( dialog --title "$title" --inputbox "Please choose a password (6+ charters):" $w $h --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+    dialog --title "$title" --infobox "Signing up...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
+    userToken=$( phantomjs js/signUp.js $username $password $email )
+}
 
 function loginPrompt {
     # Prompt for Username/Password
     username=$( dialog --title "$title" --inputbox "Enter your username:" $w $h --output-fd 1 )
     if test $? -ne 0; then clear && exit; fi;
-    password=$( dialog --inputbox "Enter your password:" $w $h --output-fd 1 )
+    password=$( dialog --title "$title" --inputbox "Enter your password:" $w $h --output-fd 1 )
     if test $? -ne 0; then clear && exit; fi;
     dialog --title "$title" --infobox "Logging in...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
     userToken=$( phantomjs js/login.js $username $password )
@@ -41,11 +65,11 @@ function loginPrompt {
 
 
 function mainNav {
-    res=$( dialog --title "$title" --menu "Welcome..." $w $h  1 Notifications 2 Feed 3 Search 4 Collabs 5 Profile 6 Settings 7 Log Out )
+    res=$( dialog --title "$title" --menu "Welcome..." $w $h 10 1 Notifications 2 Feed 3 Search 4 Collabs 5 Profile 6 Settings 7 Log Out )
     echo "Res: $res";
 }
 
-loginPrompt;
+initPrompt
 
 if [[ $( echo $userToken | jq '.success' ) == true ]]; then
     mainNav;
