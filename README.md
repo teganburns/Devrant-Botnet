@@ -15,6 +15,8 @@ Notes for video and bash script for creating bots on devrant.com
 - bash 
 - [jq]( https://stedolan.github.io/jq/ )
 - [curl]( https://curl.haxx.se/ )
+- [PhantomJS](http://phantomjs.org/)
+- [dialog](https://invisible-island.net/dialog/)
 
 Both **jq** and **curl** should be avaiable in most Linux distribution's package repository. 
 
