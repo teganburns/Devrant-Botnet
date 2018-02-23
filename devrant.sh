@@ -25,14 +25,13 @@ userTokenFile="userToken.json"
 
 # Dialog Settings
 title="Devrant Dialog // by @teganburns";
-w=8; h=40;
+w=9; h=40;
 mw=70; mh=130;
 
 # TODO: Clean up invalid charters from user input
 
 function initPrompt {
-    echo "called";
-    res=$(dialog --title "$title" --menu "Welcome..." $mw $mh 2 1 Login 2 SignUp --output-fd 1 )
+    res=$(dialog --title "$title" --menu "Welcome..." $w $h 2 1 Login 2 SignUp --output-fd 1 )
     if test $? -ne 0; then clear && exit; fi;
     case $res in
         1) loginPrompt;;
@@ -61,7 +60,7 @@ function signupPrompt {
 
 function loginPrompt {
     # Check for userToken // aka. user already logged in
-    if [[ -e "userTokenFile" ]]; then
+    if [[ -e "$userTokenFile" ]]; then
         # TODO: Handle Refresh tokens
         userToken=$( cat $userTokenFile );
 
@@ -78,10 +77,39 @@ function loginPrompt {
 }
 
 function navNotifications {
-    echo "Notifications Function";
+    dialog --title "$title" --infobox "Requesting notifications...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
+    userToken=$( phantomjs js/login.js $username $password )
 }
 
-#function navFeed {}
+function navFeed {
+    res=$(dialog --title "$title" --menu "" $w $h 8 1 Feed 2 Algo 3 Recent 4 Top/Day 5 Top/Week 6 Top/Month 7 Top/All 8 GoBack --output-fd 1 )
+    if test $? -ne 0; then clear && exit; fi;
+    dialog --title "$title" --infobox "Requesting Feed...\n\nIf you can read this you have a REALLY slow connection or something is not working correctly. Concider killing the application." $w $h;
+    case $res in
+        1) feed=$( phantomjs js/getFeed.js feed );;
+        2) feed=$( phantomjs js/getFeed.js algo );;
+        3) feed=$( phantomjs js/getFeed.js recent );;
+        4) feed=$( phantomjs js/getFeed.js day );;
+        5) feed=$( phantomjs js/getFeed.js week );;
+        6) feed=$( phantomjs js/getFeed.js month );;
+        7) feed=$( phantomjs js/getFeed.js all );;
+    esac
+    echo "$feed" > "feed.txt";
+    readFeed
+}
+
+function readFeed {
+
+    cont=1;
+    while [ $cont -gt 0 ]; do
+        # TODO: Create a "Next/Back/Exit" menu with dialog
+        rant=$( cat 'feed.txt' | sed -r -n 's/^\[/\0/p' | jq ".[$cont]" )
+        dialog --title "$title" --infobox "$rant" $mw $mh;
+        break;
+    done
+
+}
+
 #function navSearch {}
 #function navCollabs {}
 #function navProfile {}
@@ -95,7 +123,7 @@ function mainNav {
     case $res in
         0) clear && exit;;
         1) navNotifications;;
-        2) clear && echo "Feed Menu";;
+        2) navFeed;;
         3) clear && echo "Search Menu";;
         4) clear && echo "Collabs Menu";;
         5) clear && echo "Profile Menu";;
@@ -104,6 +132,8 @@ function mainNav {
     esac
 }
 
+
+# MAIN
 initPrompt
 
 if [[ $( echo $userToken | jq '.success' ) == true ]]; then
